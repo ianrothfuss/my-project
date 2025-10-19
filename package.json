@@ -106,7 +106,9 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "sharp"
+      "esbuild",
+      "sharp",
+      "workerd"
     ]
   }
 }
