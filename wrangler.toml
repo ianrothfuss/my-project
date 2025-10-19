@@ -26,8 +26,8 @@ COMPANY_NAME = "Payload Inc."
 TWITTER_CREATOR = "@payloadcms"
 TWITTER_SITE = "https://nextjs.org/commerce"
 SITE_NAME = "Payload Commerce"
-PAYLOAD_PUBLIC_SERVER_URL = "https://your-domain.com"  # Update with actual domain
-NEXT_PUBLIC_SERVER_URL = "https://your-domain.com"     # Update with actual domain
+PAYLOAD_PUBLIC_SERVER_URL = "https://my-project.ian-rothfuss.workers.dev"
+NEXT_PUBLIC_SERVER_URL = "https://my-project.ian-rothfuss.workers.dev"
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_live_your_stripe_publishable_key"
 
 # The following secrets should be set via `npx wrangler secret put`:
