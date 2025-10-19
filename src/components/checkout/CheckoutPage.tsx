@@ -91,7 +91,14 @@ export const CheckoutPage: React.FC = () => {
           setPaymentData(paymentData)
         }
       } catch (error) {
-        const errorData = error instanceof Error ? JSON.parse(error.message) : {}
+        let errorData: any = {}
+        try {
+          errorData = error instanceof Error ? JSON.parse(error.message) : {}
+        } catch {
+          // If error message is not valid JSON, use empty object
+          errorData = {}
+        }
+
         let errorMessage = 'An error occurred while initiating payment.'
 
         if (errorData?.cause?.code === 'OutOfStock') {
