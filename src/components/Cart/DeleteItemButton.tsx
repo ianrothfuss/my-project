@@ -8,7 +8,7 @@ import React from 'react'
 
 export function DeleteItemButton({ item }: { item: CartItem }) {
   const { removeItem } = useCart()
-  const itemId = item.id
+  const itemId = item.id ? Number(item.id) : null
 
   return (
     <form>

@@ -8,7 +8,15 @@ import { PayloadAdminBar } from '@payloadcms/admin-bar'
 import React, { useState } from 'react'
 import { User } from '@/payload-types'
 
-const collectionLabels = {
+type CollectionKey = 'pages' | 'posts' | 'projects'
+
+const collectionLabels: Record<
+  CollectionKey,
+  {
+    plural: string
+    singular: string
+  }
+> = {
   pages: {
     plural: 'Pages',
     singular: 'Page',
@@ -31,12 +39,16 @@ export const AdminBar: React.FC<{
   const { adminBarProps } = props || {}
   const segments = useSelectedLayoutSegments()
   const [show, setShow] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore - todo fix, not sure why this is erroring
-  const collection = collectionLabels?.[segments?.[1]] ? segments?.[1] : 'pages'
 
-  const onAuthChange = React.useCallback((user: User) => {
-    const canSeeAdmin = user?.roles && Array.isArray(user?.roles) && user?.roles?.includes('admin')
+  const collection: CollectionKey =
+    segments?.[1] && segments[1] in collectionLabels
+      ? (segments[1] as CollectionKey)
+      : 'pages'
+
+  const onAuthChange = React.useCallback((user: unknown) => {
+    const typedUser = user as User | null | undefined
+    const canSeeAdmin =
+      typedUser?.roles && Array.isArray(typedUser?.roles) && typedUser?.roles?.includes('admin')
 
     setShow(Boolean(canSeeAdmin))
   }, [])
@@ -59,16 +71,10 @@ export const AdminBar: React.FC<{
           }}
           cmsURL={process.env.NEXT_PUBLIC_SERVER_URL}
           collectionLabels={{
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore - todo fix, not sure why this is erroring
-            plural: collectionLabels[collection]?.plural || 'Pages',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore - todo fix, not sure why this is erroring
-            singular: collectionLabels[collection]?.singular || 'Page',
+            plural: collectionLabels[collection].plural,
+            singular: collectionLabels[collection].singular,
           }}
           logo={<Title />}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore - todo fix, not sure why this is erroring
           onAuthChange={onAuthChange}
           style={{
             backgroundColor: 'transparent',

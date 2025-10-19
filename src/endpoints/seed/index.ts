@@ -140,55 +140,51 @@ export const seed = async ({
       ),
     ])
 
-  const [
-    customer,
-    imageHat,
-    imageTshirtBlack,
-    imageTshirtWhite,
-    imageHero,
-    accessoriesCategory,
-    tshirtsCategory,
-    hatsCategory,
-  ] = await Promise.all([
-    payload.create({
-      collection: 'users',
-      data: {
-        name: 'Customer',
-        email: 'customer@example.com',
-        password: 'password',
-        roles: ['customer'],
-      },
-    }),
-    payload.create({
-      collection: 'media',
-      data: imageHatData,
-      file: imageHatBuffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: imageTshirtBlackData,
-      file: imageTshirtBlackBuffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: imageTshirtWhiteData,
-      file: imageTshirtWhiteBuffer,
-    }),
-    payload.create({
-      collection: 'media',
-      data: imageHero1Data,
-      file: heroBuffer,
-    }),
-    categories.map((category) =>
+  const [customer, imageHat, imageTshirtBlack, imageTshirtWhite, imageHero, categoriesResults] =
+    await Promise.all([
       payload.create({
-        collection: 'categories',
+        collection: 'users',
         data: {
-          title: category,
-          slug: category,
+          name: 'Customer',
+          email: 'customer@example.com',
+          password: 'password',
+          roles: ['customer'],
         },
       }),
-    ),
-  ])
+      payload.create({
+        collection: 'media',
+        data: imageHatData,
+        file: imageHatBuffer,
+      }),
+      payload.create({
+        collection: 'media',
+        data: imageTshirtBlackData,
+        file: imageTshirtBlackBuffer,
+      }),
+      payload.create({
+        collection: 'media',
+        data: imageTshirtWhiteData,
+        file: imageTshirtWhiteBuffer,
+      }),
+      payload.create({
+        collection: 'media',
+        data: imageHero1Data,
+        file: heroBuffer,
+      }),
+      Promise.all(
+        categories.map((category) =>
+          payload.create({
+            collection: 'categories',
+            data: {
+              title: category,
+              slug: category,
+            },
+          }),
+        ),
+      ),
+    ])
+
+  const [accessoriesCategory, tshirtsCategory, hatsCategory] = categoriesResults
 
   payload.logger.info(`— Seeding variant types and options...`)
 
@@ -358,13 +354,9 @@ export const seed = async ({
     data: {
       currency: 'USD',
       customer: customer.id,
-      paymentMethod: 'stripe',
-      stripe: {
-        customerID: 'cus_123',
-        paymentIntentID: 'pi_123',
-      },
       status: 'pending',
       billingAddress: baseAddressUSData,
+      amount: 7499,
     },
   })
 
@@ -373,13 +365,9 @@ export const seed = async ({
     data: {
       currency: 'USD',
       customer: customer.id,
-      paymentMethod: 'stripe',
-      stripe: {
-        customerID: 'cus_123',
-        paymentIntentID: 'pi_123',
-      },
       status: 'succeeded',
       billingAddress: baseAddressUSData,
+      amount: 7499,
     },
   })
 

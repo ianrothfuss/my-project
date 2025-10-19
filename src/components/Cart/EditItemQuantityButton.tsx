@@ -50,10 +50,11 @@ export function EditItemQuantityButton({ type, item }: { item: CartItem; type: '
           e.preventDefault()
 
           if (item.id) {
+            const itemIdNumber = Number(item.id)
             if (type === 'plus') {
-              incrementItem(item.id)
+              incrementItem(itemIdNumber)
             } else {
-              decrementItem(item.id)
+              decrementItem(itemIdNumber)
             }
           }
         }}

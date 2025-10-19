@@ -29,6 +29,11 @@ import { plugins } from './plugins'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Validate environment
+if (!process.env.PAYLOAD_SECRET && process.env.NODE_ENV === 'production') {
+  throw new Error('PAYLOAD_SECRET environment variable is required in production')
+}
+
 export default buildConfig({
   admin: {
     components: {
@@ -42,7 +47,7 @@ export default buildConfig({
     user: Users.slug,
   },
   collections: [Users, Pages, Categories, Media],
-  db: globalThis.cloudflare?.env?.D1 
+  db: globalThis.cloudflare?.env?.D1
     ? sqliteD1Adapter({
         binding: globalThis.cloudflare.env.D1,
       })
@@ -92,22 +97,27 @@ export default buildConfig({
   plugins: [
     ...plugins,
     // Only add R2 storage adapter in Cloudflare Workers environment
-    ...(globalThis.cloudflare?.env?.R2_BUCKET ? [
-      s3Storage({
-        config: {
-          bucket: globalThis.cloudflare.env.R2_BUCKET,
-          region: 'auto',
-          endpoint: `https://${globalThis.cloudflare.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-          credentials: {
-            accessKeyId: globalThis.cloudflare.env.R2_ACCESS_KEY_ID,
-            secretAccessKey: globalThis.cloudflare.env.R2_SECRET_ACCESS_KEY,
-          },
-        },
-        collections: {
-          media: true,
-        },
-      }),
-    ] : []),
+    ...(globalThis.cloudflare?.env?.R2_BUCKET &&
+    globalThis.cloudflare?.env?.CLOUDFLARE_ACCOUNT_ID &&
+    globalThis.cloudflare?.env?.R2_ACCESS_KEY_ID &&
+    globalThis.cloudflare?.env?.R2_SECRET_ACCESS_KEY
+      ? [
+          s3Storage({
+            bucket: globalThis.cloudflare.env.R2_BUCKET.name,
+            config: {
+              region: 'auto',
+              endpoint: `https://${globalThis.cloudflare.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+              credentials: {
+                accessKeyId: globalThis.cloudflare.env.R2_ACCESS_KEY_ID,
+                secretAccessKey: globalThis.cloudflare.env.R2_SECRET_ACCESS_KEY,
+              },
+            },
+            collections: {
+              media: true,
+            },
+          }),
+        ]
+      : []),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
