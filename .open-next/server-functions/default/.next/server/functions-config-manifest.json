@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "functions": {
+    "/next/seed": {
+      "maxDuration": 60
+    }
+  }
+}
