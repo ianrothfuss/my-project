@@ -1,16 +1,18 @@
 // storage-adapter-import-placeholder
-import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
+import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
+import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 import {
-  BoldFeature,
-  EXPERIMENTAL_TableFeature,
-  IndentFeature,
-  ItalicFeature,
-  LinkFeature,
-  OrderedListFeature,
-  UnderlineFeature,
-  UnorderedListFeature,
-  lexicalEditor,
+    BoldFeature,
+    EXPERIMENTAL_TableFeature,
+    IndentFeature,
+    ItalicFeature,
+    LinkFeature,
+    OrderedListFeature,
+    UnderlineFeature,
+    UnorderedListFeature,
+    lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -40,11 +42,15 @@ export default buildConfig({
     user: Users.slug,
   },
   collections: [Users, Pages, Categories, Media],
-  db: vercelPostgresAdapter({
-    pool: {
-      connectionString: process.env.POSTGRES_URL || '',
-    },
-  }),
+  db: globalThis.cloudflare?.env?.D1 
+    ? sqliteD1Adapter({
+        binding: globalThis.cloudflare.env.D1,
+      })
+    : sqliteAdapter({
+        client: {
+          url: `file:${path.resolve(process.cwd(), 'payload.db')}`,
+        },
+      }),
   editor: lexicalEditor({
     features: () => {
       return [
@@ -85,7 +91,23 @@ export default buildConfig({
   globals: [Header, Footer],
   plugins: [
     ...plugins,
-    // storage-adapter-placeholder
+    // Only add R2 storage adapter in Cloudflare Workers environment
+    ...(globalThis.cloudflare?.env?.R2_BUCKET ? [
+      s3Storage({
+        config: {
+          bucket: globalThis.cloudflare.env.R2_BUCKET,
+          region: 'auto',
+          endpoint: `https://${globalThis.cloudflare.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+          credentials: {
+            accessKeyId: globalThis.cloudflare.env.R2_ACCESS_KEY_ID,
+            secretAccessKey: globalThis.cloudflare.env.R2_SECRET_ACCESS_KEY,
+          },
+        },
+        collections: {
+          media: true,
+        },
+      }),
+    ] : []),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

@@ -1,0 +1,28 @@
+name = "my-project"
+main = "src/app/api/[[...slug]]/route.ts"
+compatibility_date = "2024-01-01"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "D1"
+database_name = "my-project-db"
+database_id = "your-database-id-here"
+
+# R2 Storage binding
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "my-project-bucket"
+
+# Environment variables for production
+[vars]
+PAYLOAD_SECRET = "your-payload-secret-here"
+COMPANY_NAME = "Payload Inc."
+TWITTER_CREATOR = "@payloadcms"
+TWITTER_SITE = "https://nextjs.org/commerce"
+SITE_NAME = "Payload Commerce"
+PAYLOAD_PUBLIC_SERVER_URL = "https://your-domain.com"
+NEXT_PUBLIC_SERVER_URL = "https://your-domain.com"
+PREVIEW_SECRET = "your-preview-secret-here"
+STRIPE_SECRET_KEY = "sk_live_your_stripe_secret_key"
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_live_your_stripe_publishable_key"
+STRIPE_WEBHOOKS_SIGNING_SECRET = "whsec_your_webhook_signing_secret"
