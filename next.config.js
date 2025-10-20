@@ -7,6 +7,9 @@ const NEXT_PUBLIC_SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://loc
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // Disable Next.js image optimization for Cloudflare Workers deployment
+    // Cloudflare Workers doesn't support sharp (which uses MessagePort/worker_threads)
+    unoptimized: true,
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)

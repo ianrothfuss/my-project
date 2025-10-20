@@ -26,7 +26,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/": {
+    "/checkout": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -39,32 +39,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/",
-      "dataRoute": "/index.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/forgot-password": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/forgot-password",
-      "dataRoute": "/forgot-password.rsc",
+      "srcRoute": "/checkout",
+      "dataRoute": "/checkout.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -98,7 +74,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/checkout": {
+    "/forgot-password": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -111,8 +87,32 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/checkout",
-      "dataRoute": "/checkout.rsc",
+      "srcRoute": "/forgot-password",
+      "dataRoute": "/forgot-password.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/",
+      "dataRoute": "/index.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -152,8 +152,8 @@
   },
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "aaedaa5a46cf1ddef049354a3dadbac2",
-    "previewModeSigningKey": "e95d209f9ffc5db91ecc429c41d5c6200499482824d01bf0f658122070a23399",
-    "previewModeEncryptionKey": "e4d77293432a4395b94b707f54cbdc0b7f58e24968ccb293ffb097a9163ea71c"
+    "previewModeId": "5506eff86253c3388a8da30a24fbaa54",
+    "previewModeSigningKey": "99eb4cefa20f5da8f27b244ad220ef34f2d445feacec45ceeba0524893f1c55a",
+    "previewModeEncryptionKey": "42ae1940070bd2606c3711679d31a19ab5c83b0e6c3168b5175d4de816e50067"
   }
 }
