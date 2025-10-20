@@ -44,6 +44,8 @@ function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
   )
 }
 
+// In production Workers runtime, use the global context
+// In development/migrations, use wrangler's getPlatformProxy
 const cloudflareRemoteBindings = process.env.NODE_ENV === 'production'
 const cloudflare =
   process.argv.find((value) => value.match(/^(generate|migrate):?/)) || !cloudflareRemoteBindings
@@ -106,28 +108,28 @@ export default buildConfig({
   globals: [Header, Footer],
   plugins: [
     ...plugins,
-    // Only add R2 storage adapter if available
-    ...((cloudflare.env as any).R2_BUCKET &&
-    (cloudflare.env as any).CLOUDFLARE_ACCOUNT_ID &&
-    (cloudflare.env as any).R2_ACCESS_KEY_ID &&
-    (cloudflare.env as any).R2_SECRET_ACCESS_KEY
-      ? [
-          s3Storage({
-            bucket: (cloudflare.env as any).R2_BUCKET.name,
-            config: {
-              region: 'auto',
-              endpoint: `https://${(cloudflare.env as any).CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-              credentials: {
-                accessKeyId: (cloudflare.env as any).R2_ACCESS_KEY_ID,
-                secretAccessKey: (cloudflare.env as any).R2_SECRET_ACCESS_KEY,
-              },
-            },
-            collections: {
-              media: true,
-            },
-          }),
-        ]
-      : []),
+    // R2 storage temporarily disabled for debugging
+    // ...((cloudflare.env as any).R2_BUCKET &&
+    // (cloudflare.env as any).CLOUDFLARE_ACCOUNT_ID &&
+    // (cloudflare.env as any).R2_ACCESS_KEY_ID &&
+    // (cloudflare.env as any).R2_SECRET_ACCESS_KEY
+    //   ? [
+    //       s3Storage({
+    //         bucket: (cloudflare.env as any).R2_BUCKET.name,
+    //         config: {
+    //           region: 'auto',
+    //           endpoint: `https://${(cloudflare.env as any).CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    //           credentials: {
+    //             accessKeyId: (cloudflare.env as any).R2_ACCESS_KEY_ID,
+    //             secretAccessKey: (cloudflare.env as any).R2_SECRET_ACCESS_KEY,
+    //           },
+    //         },
+    //         collections: {
+    //           media: true,
+    //         },
+    //       }),
+    //     ]
+    //   : []),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

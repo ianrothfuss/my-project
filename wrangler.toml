@@ -23,6 +23,7 @@ preview_bucket_name = "my-project-bucket-preview"
 # Environment variables for production (non-sensitive)
 # NOTE: Sensitive secrets should be set via `npx wrangler secret put SECRET_NAME`
 [vars]
+NODE_ENV = "production"
 CLOUDFLARE_ACCOUNT_ID = "b6c2c7eb3eff6bd0829e3effc585d3f2"
 COMPANY_NAME = "Payload Inc."
 TWITTER_CREATOR = "@payloadcms"
