@@ -26,6 +26,20 @@ const generateURL: GenerateURL<Product | Page> = ({ doc }) => {
   return doc?.slug ? `${url}/${doc.slug}` : url
 }
 
+// Validate Stripe environment variables
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+const stripeWebhookSecret = process.env.STRIPE_WEBHOOKS_SIGNING_SECRET
+
+if (!stripeSecretKey || !stripePublishableKey || !stripeWebhookSecret) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Missing required Stripe environment variables: STRIPE_SECRET_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, and STRIPE_WEBHOOKS_SIGNING_SECRET must be set in production',
+    )
+  }
+  // In development, Stripe will be disabled if environment variables are not configured
+}
+
 export const plugins: Plugin[] = [
   seoPlugin({
     generateTitle,
@@ -77,13 +91,16 @@ export const plugins: Plugin[] = [
       slug: 'users',
     },
     payments: {
-      paymentMethods: [
-        stripeAdapter({
-          secretKey: process.env.STRIPE_SECRET_KEY!,
-          publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-          webhookSecret: process.env.STRIPE_WEBHOOKS_SIGNING_SECRET!,
-        }),
-      ],
+      paymentMethods:
+        stripeSecretKey && stripePublishableKey && stripeWebhookSecret
+          ? [
+              stripeAdapter({
+                secretKey: stripeSecretKey,
+                publishableKey: stripePublishableKey,
+                webhookSecret: stripeWebhookSecret,
+              }),
+            ]
+          : [],
     },
     products: {
       productsCollectionOverride: ProductsCollection,

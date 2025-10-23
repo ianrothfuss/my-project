@@ -41,3 +41,11 @@ next-env.d.ts
 
 public/media
 
+# OpenNext build artifacts
+.open-next/
+
+# Payload database (use D1 in production)
+payload.db
+payload.db-shm
+payload.db-wal
+

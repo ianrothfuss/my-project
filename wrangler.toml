@@ -1,28 +1,42 @@
 name = "my-project"
-main = "src/app/api/[[...slug]]/route.ts"
-compatibility_date = "2024-01-01"
+main = ".open-next/worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat", "nodejs_als"]
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
 
 # D1 Database binding
 [[d1_databases]]
 binding = "D1"
 database_name = "my-project-db"
-database_id = "your-database-id-here"
+database_id = "e17d06c2-3f4b-4da8-96b2-13f4a60b3188"
+preview_database_id = "83876d53-1e73-4ace-90cf-f15aa8e47511"
 
 # R2 Storage binding
 [[r2_buckets]]
 binding = "R2_BUCKET"
 bucket_name = "my-project-bucket"
+preview_bucket_name = "my-project-bucket-preview"
 
-# Environment variables for production
+# Environment variables for production (non-sensitive)
+# NOTE: Sensitive secrets should be set via `npx wrangler secret put SECRET_NAME`
 [vars]
-PAYLOAD_SECRET = "your-payload-secret-here"
+NODE_ENV = "production"
+CLOUDFLARE_ACCOUNT_ID = "b6c2c7eb3eff6bd0829e3effc585d3f2"
 COMPANY_NAME = "Payload Inc."
 TWITTER_CREATOR = "@payloadcms"
 TWITTER_SITE = "https://nextjs.org/commerce"
 SITE_NAME = "Payload Commerce"
-PAYLOAD_PUBLIC_SERVER_URL = "https://your-domain.com"
-NEXT_PUBLIC_SERVER_URL = "https://your-domain.com"
-PREVIEW_SECRET = "your-preview-secret-here"
-STRIPE_SECRET_KEY = "sk_live_your_stripe_secret_key"
+PAYLOAD_PUBLIC_SERVER_URL = "https://my-project.ian-rothfuss.workers.dev"
+NEXT_PUBLIC_SERVER_URL = "https://my-project.ian-rothfuss.workers.dev"
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_live_your_stripe_publishable_key"
-STRIPE_WEBHOOKS_SIGNING_SECRET = "whsec_your_webhook_signing_secret"
+
+# The following secrets should be set via `npx wrangler secret put`:
+# - PAYLOAD_SECRET
+# - PREVIEW_SECRET
+# - STRIPE_SECRET_KEY
+# - STRIPE_WEBHOOKS_SIGNING_SECRET
+# - R2_ACCESS_KEY_ID
+# - R2_SECRET_ACCESS_KEY

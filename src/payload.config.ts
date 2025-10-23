@@ -1,6 +1,6 @@
 // storage-adapter-import-placeholder
+import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
-import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { s3Storage } from '@payloadcms/storage-s3'
 
 import {
@@ -17,6 +17,7 @@ import {
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
+import type { GetPlatformProxyOptions } from 'wrangler'
 
 import { Categories } from '@/collections/Categories'
 import { Media } from '@/collections/Media'
@@ -28,6 +29,28 @@ import { plugins } from './plugins'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// Validate environment
+if (!process.env.PAYLOAD_SECRET && process.env.NODE_ENV === 'production') {
+  throw new Error('PAYLOAD_SECRET environment variable is required in production')
+}
+
+function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
+  return import(/* webpackIgnore: true */ `${'__wrangler'.replaceAll('_', '')}`).then(
+    ({ getPlatformProxy }) =>
+      getPlatformProxy({
+        environment: process.env.CLOUDFLARE_ENV,
+      } satisfies GetPlatformProxyOptions),
+  )
+}
+
+// In production Workers runtime, use the global context
+// In development/migrations, use wrangler's getPlatformProxy
+const cloudflareRemoteBindings = process.env.NODE_ENV === 'production'
+const cloudflare =
+  process.argv.find((value) => value.match(/^(generate|migrate):?/)) || !cloudflareRemoteBindings
+    ? await getCloudflareContextFromWrangler()
+    : await getCloudflareContext({ async: true })
 
 export default buildConfig({
   admin: {
@@ -42,15 +65,9 @@ export default buildConfig({
     user: Users.slug,
   },
   collections: [Users, Pages, Categories, Media],
-  db: globalThis.cloudflare?.env?.D1 
-    ? sqliteD1Adapter({
-        binding: globalThis.cloudflare.env.D1,
-      })
-    : sqliteAdapter({
-        client: {
-          url: `file:${path.resolve(process.cwd(), 'payload.db')}`,
-        },
-      }),
+  db: sqliteD1Adapter({
+    binding: (cloudflare.env as any).D1,
+  }),
   editor: lexicalEditor({
     features: () => {
       return [
@@ -91,23 +108,28 @@ export default buildConfig({
   globals: [Header, Footer],
   plugins: [
     ...plugins,
-    // Only add R2 storage adapter in Cloudflare Workers environment
-    ...(globalThis.cloudflare?.env?.R2_BUCKET ? [
-      s3Storage({
-        config: {
-          bucket: globalThis.cloudflare.env.R2_BUCKET,
-          region: 'auto',
-          endpoint: `https://${globalThis.cloudflare.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-          credentials: {
-            accessKeyId: globalThis.cloudflare.env.R2_ACCESS_KEY_ID,
-            secretAccessKey: globalThis.cloudflare.env.R2_SECRET_ACCESS_KEY,
-          },
-        },
-        collections: {
-          media: true,
-        },
-      }),
-    ] : []),
+    // R2 storage for media uploads
+    ...((cloudflare.env as any).R2_BUCKET &&
+    (cloudflare.env as any).CLOUDFLARE_ACCOUNT_ID &&
+    (cloudflare.env as any).R2_ACCESS_KEY_ID &&
+    (cloudflare.env as any).R2_SECRET_ACCESS_KEY
+      ? [
+          s3Storage({
+            bucket: (cloudflare.env as any).R2_BUCKET.name || 'my-project-bucket',
+            config: {
+              region: 'auto',
+              endpoint: `https://${(cloudflare.env as any).CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+              credentials: {
+                accessKeyId: (cloudflare.env as any).R2_ACCESS_KEY_ID,
+                secretAccessKey: (cloudflare.env as any).R2_SECRET_ACCESS_KEY,
+              },
+            },
+            collections: {
+              media: true,
+            },
+          }),
+        ]
+      : []),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
