@@ -93,7 +93,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "jsdom": "26.1.0",
     "lint-staged": "^15.2.2",
-    "playwright": "1.50.0",
+    "playwright": "1.55.1",
     "playwright-core": "1.50.0",
     "postcss": "^8.4.38",
     "prettier": "^3.4.2",
