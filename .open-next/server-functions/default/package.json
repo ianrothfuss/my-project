@@ -57,9 +57,9 @@
     "graphql": "^16.8.2",
     "jsonwebtoken": "9.0.1",
     "lucide-react": "^0.477.0",
-    "next": "^15.5.4",
+    "next": "^15.5.10",
     "next-themes": "0.4.6",
-    "payload": "3.60.0",
+    "payload": "3.74.0",
     "prism-react-renderer": "^2.3.1",
     "qs-esm": "^7",
     "react": "^19.0.0",
@@ -69,7 +69,7 @@
     "stripe": "18.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "wrangler": "^4.43.0"
+    "wrangler": "^4.59.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -93,7 +93,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "jsdom": "26.1.0",
     "lint-staged": "^15.2.2",
-    "playwright": "1.50.0",
+    "playwright": "1.55.1",
     "playwright-core": "1.50.0",
     "postcss": "^8.4.38",
     "prettier": "^3.4.2",
